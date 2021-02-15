@@ -1,0 +1,212 @@
+---
+title: "R for Data Science Project"
+output: html_document
+---
+
+Adding Packages - tidyverse
+
+```{r}
+library(tidyverse)
+```
+
+# Background
+
+As a statistical consultant working for a real estate investment firm, your task is to develop a model to predict the selling price of a given home in Ames, Iowa. Your employer hopes to use this information to help assess whether the asking price of a house is higher or lower than the true value of the house. If the home is undervalued, it may be a good investment for the firm.
+
+# Training Data and relevant packages
+
+In order to better assess the quality of the model you will produce, the data have been randomly divided into three separate pieces: a training data set, a testing data set, and a validation data set. For now we will load the training data set, the others will be loaded and used later.
+
+```{r load, message = FALSE}
+load("/home/hadoop/Desktop/FinalDataAnalysis/ames_train.Rdata")
+```
+
+```{r}
+ames_train
+```
+
+```{r}
+?load
+```
+
+
+Use the code block below to load any necessary packages
+
+```{r packages, message = FALSE}
+library(statsr)
+library(dplyr)
+library(BAS)
+library(tidyverse)
+library(MASS)
+```
+
+Look at data
+
+```{r}
+ames_train
+```
+
+Look at all the columns of the dataset
+
+```{r}
+names(ames_train)
+
+```
+
+Find all the variables that has a word "price" in it
+
+```{r include=FALSE}
+library(tidyverse)
+```
+
+```{r}
+dplyr::select(ames_train, contains("price"))
+```
+
+```{r}
+head(ames_train, n = 6)
+```
+
+```{r}
+tail(ames_train)
+```
+
+```{r}
+nrow(ames_train)
+```
+
+```{r}
+ncol(ames_train)
+```
+
+## Part 1 - Exploratory Data Analysis (EDA)
+
+When you first get your data, it's very tempting to immediately begin fitting models and assessing how they perform.  However, before you begin modeling, it's absolutely essential to explore the structure of the data and the relationships between the variables in the data set.
+
+Do a detailed EDA of the ames_train data set, to learn about the structure of the data and the relationships between the variables in the data set (refer to Introduction to Probability and Data, Week 2, for a reminder about EDA if needed). Your EDA should involve creating and reviewing many plots/graphs and considering the patterns and relationships you see. 
+
+After you have explored completely, submit the three graphs/plots that you found most informative during your EDA process, and briefly explain what you learned from each (why you found each informative).
+
+* * *
+
+```{r}
+summary(ames_train)
+```
+
+```{r}
+ames_train %>% dplyr::select(Pool.QC, Fence, Misc.Feature) %>% filter(!is.na(Misc.Feature))
+```
+
+
+Removing the variables that have most of NA's and we see no reason to include them in our dataset
+
+NA's: 997 / 1000
+
+```{r}
+(ames_clean <- ames_train %>% dplyr::select(-Pool.QC))
+```
+
+```{r}
+summary(ames_train$MS.SubClass)
+```
+
+
+```{r}
+count(ames_train, MS.SubClass)
+```
+
+
+Let's first clean the data.
+
+The categorical variables which are encoded as type int have to be converted to factors first.
+
+* MS.SubClass
+* Overall.Qual
+* Overall.Cond
+
+```{r}
+str(ames_train$MS.SubClass)
+```
+
+```{r}
+str(ames_train$Overall.Cond)
+```
+
+```{r}
+str(ames_train$Overall.Qual)
+```
+
+Convert the above three variables to factors:
+
+```{r}
+(ames_clean <- ames_clean %>% mutate(MS.SubClass = as.factor(MS.SubClass), Overall.Qual = as.factor(Overall.Qual), Overall.Cond = as.factor(Overall.Cond)))
+```
+
+```{r}
+str(ames_clean$MS.SubClass)
+```
+
+```{r}
+count(ames_clean, MS.SubClass)
+```
+
+Transformation of NA's to a new category will avoid bias in the data and the modelling by removing data from the dataset.
+
+Lot.Frontage variable is a continuous variable which has 167 NA's (missing data). Hence, we shall not transform Lot.Frontage variable. 
+
+But other variables such as , Alley, Bsmt.Qual, Bsmt.Cond, Bsmt.Exposure, BsmtFin.Type.1, BsmtFin.Type.2, Fireplace.Qu, Garage.Type, Garage.Finish,Garage.Qual,Garage.Cond,Pool.QC, Fence, Misc.Feature are categorical variables which has NA's that should be converted to a new category.
+
+```{r}
+ames_clean %>% count(Alley)
+```
+
+```{r}
+str(ames_clean$Alley)
+```
+
+
+```{r}
+ames_clean %>% mutate(Alley = if_else(is.na(Alley), 'No Alley', as.character(Alley))) %>% count(Alley)
+```
+
+```{r}
+ames_train <- ames_train %>% mutate(
+  Alley = if_else(is.na(Alley), 'No Alley', as.character(Alley)),
+  Bsmt.Qual = if_else(is.na(Bsmt.Qual), 'No Basement', as.character(Bsmt.Qual)),
+  Bsmt.Cond = if_else(is.na(Bsmt.Cond), 'No Basement', as.character(Bsmt.Cond)),
+  Bsmt.Exposure = if_else(is.na(Bsmt.Exposure), 'No Basement', as.character(Bsmt.Cond)),
+  BsmtFin.Type.1 = if_else(is.na(BsmtFin.Type.1), 'No Basement', as.character(BsmtFin.Type.1)),
+  BsmtFin.Type.2 = if_else(is.na(BsmtFin.Type.2), 'No Basement', as.character(BsmtFin.Type.2)),
+  Fireplace.Qu = if_else(is.na(Fireplace.Qu), 'No Fireplace', as.character(Fireplace.Qu)),
+  Garage.Type = if_else(is.na(Garage.Type), 'No Garage', as.character(Garage.Type)),
+  Garage.Finish = if_else(is.na(Garage.Finish), 'No Garage', as.character(Garage.Finish)),
+  Garage.Qual = if_else(is.na(Garage.Qual), 'No Garage', as.character(Garage.Qual)),
+  Garage.Cond = if_else(is.na(Garage.Cond), 'No Garage', as.character(Garage.Cond)),
+  Pool.QC = if_else(is.na(Pool.QC), 'No Pool', as.character(Pool.QC)),
+  Fence = if_else(is.na(Fence), 'No Fence', as.character(Fence)),
+  Misc.Feature = if_else(is.na(Misc.Feature), 'No MiscFeature', as.character(Misc.Feature))
+
+)
+```
+
+```{r}
+summary(ames_train)
+```
+
+```{r}
+ames_train %>% dplyr::select(Year.Built,Garage.Yr.Blt, everything())
+```
+
+```{r}
+ames_train %>% count(Garage.Yr.Blt)
+```
+
+```{r}
+ames_train %>% dplyr::select(Year.Built, Garage.Yr.Blt) %>% filter(is.na(Garage.Yr.Blt))
+```
+
+
+
+```{r}
+ames_train %>% mutate(Garage.Yr.Blt = if_else(is.na(Garage.Yr.Blt),Year.Built, Garage.Yr.Blt)) %>% dplyr::select(Year.Built, Garage.Yr.Blt, everything()) %>% count(Garage.Yr.Blt)
+```

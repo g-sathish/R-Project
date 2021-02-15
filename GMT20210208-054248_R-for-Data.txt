@@ -1,0 +1,39 @@
+00:11:21	Pravinvarsan s:	yes sir 
+00:11:39	muthupriya madasamy:	no sir
+00:11:39	yuvaraj:	visualize the data
+00:11:50	muthupriya madasamy:	not audible sir
+00:11:57	yuvaraj:	read csv file
+00:12:08	yuvaraj:	markdown concept
+00:12:10	Amal:	packages
+00:12:35	Pavitra V:	1st chapter -  tidyverse package, used mpg dataset,geom objects
+00:13:50	yuvaraj:	correct Sir
+00:14:00	Pavitra V:	correct sir
+00:14:22	yuvaraj:	s sir
+00:17:04	yuvaraj:	s sir
+00:18:35	Manojkumar M:	yes sir
+00:18:40	Amal:	s sir
+00:18:45	Pravinvarsan s:	yes sir
+00:18:58	muthupriya madasamy:	yes sir
+00:19:07	Vigneswaran S:	sir ur voice is breaking
+00:19:37	muthupriya madasamy:	yes sir i am here
+00:19:43	Manojkumar M:	R Mark Down
+00:20:13	yuvaraj:	rmd markdown concept
+00:20:15	Amal:	combination of markdown and chunks
+00:20:29	yuvaraj:	insert chunk file
+00:21:22	Vigneswaran S:	i have netwiork issue
+00:22:02	yuvaraj:	customer to easy understand the project for rmd file
+00:22:24	Pavitra V:	sorry sir, having some network issues
+00:22:35	yuvaraj:	particular output to view the customer
+00:32:29	yuvaraj:	predict the selling price
+00:32:46	yuvaraj:	investment to the real estate
+00:37:20	yuvaraj:	near by school or college
+00:37:52	yuvaraj:	that area is developing area or not
+00:49:32	Vigneswaran S:	breaking
+00:49:41	Vigneswaran S:	yes sir im here
+00:53:02	muthupriya madasamy:	yes sir
+01:12:06	RVS CAS:	https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data
+01:18:03	Vigneswaran S:	sir i could ot hear a single word your voice is totally breaking
+01:55:30	Pavitra V:	is this include in semester exam? sir
+01:56:42	Pavitra V:	ok sir. Thank you
+01:57:02	RVS CAS:	sathish@rvsgroup.com
+01:57:06	RVS CAS:	9543132456
