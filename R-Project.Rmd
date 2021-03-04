@@ -18,24 +18,17 @@ As a statistical consultant working for a real estate investment firm, your task
 In order to better assess the quality of the model you will produce, the data have been randomly divided into three separate pieces: a training data set, a testing data set, and a validation data set. For now we will load the training data set, the others will be loaded and used later.
 
 ```{r load, message = FALSE}
-load("/home/hadoop/Desktop/FinalDataAnalysis/ames_train.Rdata")
+load("ames_train.Rdata")
 ```
 
 ```{r}
 ames_train
 ```
 
-```{r}
-?load
-```
-
-
 Use the code block below to load any necessary packages
 
 ```{r packages, message = FALSE}
-library(statsr)
 library(dplyr)
-library(BAS)
 library(tidyverse)
 library(MASS)
 ```
@@ -53,32 +46,6 @@ names(ames_train)
 
 ```
 
-Find all the variables that has a word "price" in it
-
-```{r include=FALSE}
-library(tidyverse)
-```
-
-```{r}
-dplyr::select(ames_train, contains("price"))
-```
-
-```{r}
-head(ames_train, n = 6)
-```
-
-```{r}
-tail(ames_train)
-```
-
-```{r}
-nrow(ames_train)
-```
-
-```{r}
-ncol(ames_train)
-```
-
 ## Part 1 - Exploratory Data Analysis (EDA)
 
 When you first get your data, it's very tempting to immediately begin fitting models and assessing how they perform.  However, before you begin modeling, it's absolutely essential to explore the structure of the data and the relationships between the variables in the data set.
@@ -92,29 +59,6 @@ After you have explored completely, submit the three graphs/plots that you found
 ```{r}
 summary(ames_train)
 ```
-
-```{r}
-ames_train %>% dplyr::select(Pool.QC, Fence, Misc.Feature) %>% filter(!is.na(Misc.Feature))
-```
-
-
-Removing the variables that have most of NA's and we see no reason to include them in our dataset
-
-NA's: 997 / 1000
-
-```{r}
-(ames_clean <- ames_train %>% dplyr::select(-Pool.QC))
-```
-
-```{r}
-summary(ames_train$MS.SubClass)
-```
-
-
-```{r}
-count(ames_train, MS.SubClass)
-```
-
 
 Let's first clean the data.
 
@@ -136,20 +80,6 @@ str(ames_train$Overall.Cond)
 str(ames_train$Overall.Qual)
 ```
 
-Convert the above three variables to factors:
-
-```{r}
-(ames_clean <- ames_clean %>% mutate(MS.SubClass = as.factor(MS.SubClass), Overall.Qual = as.factor(Overall.Qual), Overall.Cond = as.factor(Overall.Cond)))
-```
-
-```{r}
-str(ames_clean$MS.SubClass)
-```
-
-```{r}
-count(ames_clean, MS.SubClass)
-```
-
 Transformation of NA's to a new category will avoid bias in the data and the modelling by removing data from the dataset.
 
 Lot.Frontage variable is a continuous variable which has 167 NA's (missing data). Hence, we shall not transform Lot.Frontage variable. 
@@ -157,16 +87,16 @@ Lot.Frontage variable is a continuous variable which has 167 NA's (missing data)
 But other variables such as , Alley, Bsmt.Qual, Bsmt.Cond, Bsmt.Exposure, BsmtFin.Type.1, BsmtFin.Type.2, Fireplace.Qu, Garage.Type, Garage.Finish,Garage.Qual,Garage.Cond,Pool.QC, Fence, Misc.Feature are categorical variables which has NA's that should be converted to a new category.
 
 ```{r}
-ames_clean %>% count(Alley)
+ames_train %>% count(Alley)
 ```
 
 ```{r}
-str(ames_clean$Alley)
+str(ames_train$Alley)
 ```
 
 
 ```{r}
-ames_clean %>% mutate(Alley = if_else(is.na(Alley), 'No Alley', as.character(Alley))) %>% count(Alley)
+ames_train %>% mutate(Alley = if_else(is.na(Alley), 'No Alley', as.character(Alley))) %>% count(Alley)
 ```
 
 ```{r}
@@ -194,19 +124,47 @@ summary(ames_train)
 ```
 
 ```{r}
-ames_train %>% dplyr::select(Year.Built,Garage.Yr.Blt, everything())
+model <- lm(price ~ area + Year.Built, data = ames_train)
 ```
 
 ```{r}
-ames_train %>% count(Garage.Yr.Blt)
+summary(model)
 ```
 
 ```{r}
-ames_train %>% dplyr::select(Year.Built, Garage.Yr.Blt) %>% filter(is.na(Garage.Yr.Blt))
+ames_train
 ```
-
-
 
 ```{r}
-ames_train %>% mutate(Garage.Yr.Blt = if_else(is.na(Garage.Yr.Blt),Year.Built, Garage.Yr.Blt)) %>% dplyr::select(Year.Built, Garage.Yr.Blt, everything()) %>% count(Garage.Yr.Blt)
+ames_train %>% dplyr::select(area, Year.Built, price)
 ```
+
+```{r}
+df <- tibble(area = 856, Year.Built = 1939)
+```
+
+```{r}
+df
+```
+
+```{r}
+predict(model, df)
+```
+
+```{r}
+# error
+126000 - 83466.85
+```
+
+```{r}
+names(model)
+```
+
+```{r}
+model$fitted.values[1]
+```
+
+```{r}
+model$residuals[1]
+```
+
